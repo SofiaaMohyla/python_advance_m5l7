@@ -1,0 +1,44 @@
+<!-- myapp/templates/myapp/search.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Search with AJAX</title>
+</head>
+<body>
+    <h1>Live Search</h1>
+    <input type="text" id="search" placeholder="Пошук...">
+    <div id="results"></div> <!-- Контейнер для результатів -->
+
+    <script>
+        const searchInput = document.getElementById('search');
+        const resultsDiv = document.getElementById('results');
+
+        // Обробник події 'input' для поля пошуку
+        searchInput.addEventListener('input', function() {
+            const query = searchInput.value.trim();
+
+            // Перевірка на порожній запит
+            if (query === '') {
+                resultsDiv.innerHTML = ''; // Очищуємо результати, якщо запит порожній
+                return;
+            }
+
+            // Виконуємо AJAX-запит
+            fetch(`/search/results/?query=${encodeURIComponent(query)}`)
+                .then(response => response.json())
+                .then(data => {
+                    resultsDiv.innerHTML = ''; // Очищуємо попередні результати
+
+                    data.results.forEach(item => {
+                        const itemElement = document.createElement('p');
+                        itemElement.textContent = item.name;
+                        resultsDiv.appendChild(itemElement);
+                    });
+                })
+                .catch(error => console.error('Помилка при пошуку:', error));
+        });
+    </script>
+</body>
+</html>
